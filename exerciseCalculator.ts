@@ -1,34 +1,34 @@
 interface Result {
-    periodLength: number,
-    trainingDays: number,
-    success: Boolean,
-    rating: rate,
-    ratingDescription: String,
-    target: number,
-    average: number
+    periodLength: number;
+    trainingDays: number;
+    success: boolean;
+    rating: rate;
+    ratingDescription: string;
+    target: number;
+    average: number;
 }
 
 interface Arguments {
-    exercise: Array<number>,
-    target: number
+    exercise: Array<number>;
+    target: number;
 }
 type rate = 1 | 2 | 3 | 4;
 
-const parseArgumentsExer = (args: Array<String>): Arguments => {
+export const parseArgumentsExer = (args: Array<string>): Arguments => {
     if (args.length < 4) throw new Error('Not enough args');
     const values = args.slice(2, args.length - 1);
-    const workouts = values.map(n => !isNaN(Number(n)) ? Number(n) : null);
-    const target = args[args.length - 1]
+    const workouts = values.filter(n => !isNaN(Number(n)));
+    const target = args[args.length - 1];
     if(values.length !== workouts.length || isNaN(Number(target))) {
-        throw new Error('Not all arguments were numbers')
+        throw new Error('Not all arguments were numbers');
     }
     return ({
-        exercise: workouts,
+        exercise: workouts.map(n => Number(n)),
         target: Number(target)
-    })
-}
+    });
+};
 
-const ratingDescription = (rate: rate): String => {
+const ratingDescription = (rate: rate): string => {
     switch(rate) {
         case 1:
             return 'Not good';
@@ -39,9 +39,9 @@ const ratingDescription = (rate: rate): String => {
         case 4:
             return 'Oh yeah!';
         default:
-            throw new Error('Not on the scale')
+            throw new Error('Not on the scale');
     }
-}
+};
 
 const rateNumber = (a: number, t: number): rate => {
     const total = a / t;
@@ -54,9 +54,9 @@ const rateNumber = (a: number, t: number): rate => {
     } else {
         return 2;
     }
-}
+};
 
-const calculate = (e: Array<number>, target: number): Result => {
+export const calculate = (e: Array<number>, target: number): Result => {
     const periodLength = e.length;
     const trainingDays = e.filter(n => n !== 0).length;
     const average = e.reduce((total, number) => total + number) / periodLength;
@@ -70,13 +70,13 @@ const calculate = (e: Array<number>, target: number): Result => {
         ratingDescription: ratingDescription(rate),
         target,
         average
-    }
+    };
     return result;
-}
+};
 
 try {
     const { exercise, target } = parseArgumentsExer(process.argv);
     console.log(calculate(exercise, target));
 } catch (e) {
-    console.log('That did not go too well. Check this: ' + e.message)
+    console.log('That did not go too well. Check this: ' + e.message);
 }
